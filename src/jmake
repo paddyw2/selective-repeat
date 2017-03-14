@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "Compiling..."
+javac -d ../bin *.java
+echo "Finished"
+echo ""

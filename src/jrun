@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "Running..."
+echo ""
+cd ../bin
+java FastClient localhost 8888 test.txt 1

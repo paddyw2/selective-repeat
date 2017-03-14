@@ -1,0 +1,6 @@
+[Server] Ready to receive client connection request
+[Server] Ready to receive test.txt from client
+Received packet with sequence number: 0
+Packet within the receive window, sent ACK with sequence number: 0
+[Server] file transfer completed
+[Server] Terminating connection and server
