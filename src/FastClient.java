@@ -21,6 +21,8 @@ public class FastClient {
     private DataInputStream input;   
     private int windowSize;
     private TxQueue window;
+    private AckReceive ackReceiver;
+    private Timer timer;
 
     /**
         * Constructor to initialize the program 
@@ -32,8 +34,6 @@ public class FastClient {
         * @param timeout    time out value
         */
     public FastClient(String server_name, int server_port, int window, int timeout) {
-
-
         /* initialize */    
         /* Initialize values */
         serverName = server_name;
@@ -41,7 +41,7 @@ public class FastClient {
         responseTimeout = timeout;
         windowSize = window;
         this.window = new TxQueue(window);
-
+        timer = new Timer(true);
 
         // create sender socket
         try {
@@ -66,12 +66,15 @@ public class FastClient {
             System.out.println("Inet error");
             System.out.println(e.getMessage());
         }
-    
+
+        ackReceiver = new AckReceive(UDPSocket, this.window);
     }
     
     /* send file */
 
     public void send(String file_name) {
+        // start ack receive thread
+        ackReceiver.start();
         // note file name
         fileName = file_name;
         // send handshake
@@ -127,17 +130,37 @@ public class FastClient {
            
             // send packet and get response
             // (takes into account timeout)
-            sendPacketData(payload, seqNo);
-            seqNo++;
+            while(queueFull()) {
+                //System.out.println("Waiting for window space");
+            }
+            // add packet to queue window
+            try {
+                window.add(new Segment(seqNo, payload));
+                TxQueueNode node = window.getNode(seqNo);
+                node.setStatus(TxQueueNode.SENT);
+                // send packet
+                sendPacketData(payload, seqNo);
+                seqNo++;
+                // start timer
+                timer.schedule(new TimeoutHandler(this, seqNo, payload), responseTimeout);
+            } catch (Exception e) {
+                System.out.println("Error adding packet, resending...");
+            }
 
-            if(!fileNotFinished) {
+            
+            if(!fileNotFinished && window.isEmpty()) {
                 try {
+                    System.out.println("Terminating...");
                     output.writeByte(0);
                 } catch (Exception e) {
                     System.out.println("End of file output error");
                 }
+            } else {
+                while(!window.isEmpty()) {
+                }
             }
         }
+
 
         // send end of transmission message
         boolean EOTSuccess = TCPEndTransmission();
@@ -151,10 +174,31 @@ public class FastClient {
             output.close();
             UDPSocket.close();
             socket.close();
+            ackReceiver.stopThread();
+            timer.cancel();
         } catch (Exception e) {
             System.out.println("Socket close error");
         }
+    }
 
+    public Timer getTimer()
+    {
+        return timer;
+    }
+
+    public int getTimeout()
+    {
+        return responseTimeout;
+    }
+
+    public TxQueue getWindow()
+    {
+        return window;
+    }
+
+    public boolean queueFull()
+    {
+        return window.isFull();
     }
 
     public boolean TCPHandshake()
@@ -262,50 +306,26 @@ public class FastClient {
         // upon timeout, repeat process until ACK
         // received
 
-        // create receiving packet
-        byte[] receiveData = new byte[4];
-        DatagramPacket pkt = new DatagramPacket(receiveData, receiveData.length);
+        // creating a segment with specified payload
+        // and sequence number
+        Segment seg1 = new Segment(seqNo, payload);
+        
+        // convert segment to bytes in
+        // order to send data
+        byte[] sendData = seg1.getBytes();
 
-        // send specified data until ACK received
-        boolean timeoutReached = true;
-        while(timeoutReached) {
+        // create sender packet from specified segment
+        // data, server and server port info
+        DatagramPacket sendPacket =  new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
 
-            // creating a segment with specified payload
-            // and sequence number
-            Segment seg1 = new Segment(seqNo, payload);
-            
-            // convert segment to bytes in
-            // order to send data
-            byte[] sendData = seg1.getBytes();
-
-            // create sender packet from specified segment
-            // data, server and server port info
-            DatagramPacket sendPacket =  new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
-
-            // try send packet to server
-            try {
-                UDPSocket.send(sendPacket);
-            } catch (Exception e) {
-                System.out.println("Packet send error");
-                System.out.println(e.getMessage());
-            }
-
-            // wait for server response
-            try {
-                UDPSocket.receive(pkt);
-                // if packet received, and
-                // correct ACK, break loop
-                Segment ack = new Segment(pkt);
-                int ackNo = ack.getSeqNum();
-                if(ackNo == seqNo)
-                    timeoutReached = false;
-                else
-                    System.out.println("Duplicate ACK - resending packet");
-            } catch (Exception e) {
-                System.out.println("Timeout: response not received");
-                System.out.println("* " + e.getMessage() + " *");
-            }
+        // try send packet to server
+        try {
+            UDPSocket.send(sendPacket);
+        } catch (Exception e) {
+            System.out.println("Packet send error");
+            System.out.println(e.getMessage());
         }
+
     }
 
 

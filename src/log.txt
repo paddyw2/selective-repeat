@@ -1,0 +1,85 @@
+[Server] Ready to receive client connection request
+[Server] Ready to receive readlist.pdf from client
+Received packet with sequence number: 0
+Packet within the receive window, sent ACK with sequence number: 0
+Received packet with sequence number: 1
+Packet within the receive window, sent ACK with sequence number: 1
+Received packet with sequence number: 2
+Packet within the receive window, sent ACK with sequence number: 2
+Received packet with sequence number: 3
+Packet within the receive window, sent ACK with sequence number: 3
+Received packet with sequence number: 4
+Packet within the receive window, sent ACK with sequence number: 4
+Received packet with sequence number: 5
+Packet within the receive window, sent ACK with sequence number: 5
+Received packet with sequence number: 6
+Packet within the receive window, sent ACK with sequence number: 6
+Received packet with sequence number: 7
+Packet within the receive window, sent ACK with sequence number: 7
+Received packet with sequence number: 8
+Packet within the receive window, sent ACK with sequence number: 8
+Received packet with sequence number: 9
+Packet within the receive window, sent ACK with sequence number: 9
+Received packet with sequence number: 10
+Packet within the receive window, sent ACK with sequence number: 10
+Received packet with sequence number: 11
+Packet within the receive window, sent ACK with sequence number: 11
+Received packet with sequence number: 12
+Packet within the receive window, sent ACK with sequence number: 12
+Received packet with sequence number: 13
+Packet within the receive window, sent ACK with sequence number: 13
+Received packet with sequence number: 14
+Packet within the receive window, sent ACK with sequence number: 14
+Received packet with sequence number: 15
+Packet within the receive window, sent ACK with sequence number: 15
+Received packet with sequence number: 16
+Packet within the receive window, sent ACK with sequence number: 16
+Received packet with sequence number: 17
+Packet within the receive window, sent ACK with sequence number: 17
+Received packet with sequence number: 18
+Packet within the receive window, sent ACK with sequence number: 18
+Received packet with sequence number: 19
+Packet within the receive window, sent ACK with sequence number: 19
+Received packet with sequence number: 20
+Packet within the receive window, sent ACK with sequence number: 20
+Received packet with sequence number: 21
+Packet within the receive window, sent ACK with sequence number: 21
+Received packet with sequence number: 22
+Packet within the receive window, sent ACK with sequence number: 22
+Received packet with sequence number: 23
+Packet within the receive window, sent ACK with sequence number: 23
+Received packet with sequence number: 24
+Packet within the receive window, sent ACK with sequence number: 24
+Received packet with sequence number: 25
+Packet within the receive window, sent ACK with sequence number: 25
+Received packet with sequence number: 26
+Packet within the receive window, sent ACK with sequence number: 26
+Received packet with sequence number: 27
+Packet within the receive window, sent ACK with sequence number: 27
+Received packet with sequence number: 28
+Packet within the receive window, sent ACK with sequence number: 28
+Received packet with sequence number: 29
+Packet within the receive window, sent ACK with sequence number: 29
+Received packet with sequence number: 30
+Packet within the receive window, sent ACK with sequence number: 30
+Received packet with sequence number: 31
+Packet within the receive window, sent ACK with sequence number: 31
+Received packet with sequence number: 32
+Packet within the receive window, sent ACK with sequence number: 32
+Received packet with sequence number: 33
+Packet within the receive window, sent ACK with sequence number: 33
+Received packet with sequence number: 34
+Packet within the receive window, sent ACK with sequence number: 34
+Received packet with sequence number: 35
+Packet within the receive window, sent ACK with sequence number: 35
+Received packet with sequence number: 36
+Packet within the receive window, sent ACK with sequence number: 36
+Received packet with sequence number: 37
+Packet within the receive window, sent ACK with sequence number: 37
+Received packet with sequence number: 38
+Packet within the receive window, sent ACK with sequence number: 38
+Received packet with sequence number: 39
+Packet within the receive window, sent ACK with sequence number: 39
+Received packet with sequence number: 40
+Packet within the receive window, sent ACK with sequence number: 40
+[Server] Closing Exception (TCP connection prematurely closed by client): null
