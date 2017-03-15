@@ -50,13 +50,6 @@ public class FastClient {
             System.out.println("UDP socket init failure");
             System.out.println(e.getMessage());
         }
-        
-        // set socket timeout
-        try {
-            UDPSocket.setSoTimeout(responseTimeout);
-        } catch (Exception e) {
-            System.out.println("Setting timeout failed");
-        }
 
         // create IP address
         IPAddress = null;
@@ -73,8 +66,6 @@ public class FastClient {
     /* send file */
 
     public void send(String file_name) {
-        // start ack receive thread
-        ackReceiver.start();
         // note file name
         fileName = file_name;
         // send handshake
@@ -84,6 +75,9 @@ public class FastClient {
             System.exit(1);
         }
         
+        // start ack receive thread
+        ackReceiver.start();
+
         // read file contents into byte array
         byte[] fileBytes = readFile(fileName);
 
@@ -131,8 +125,9 @@ public class FastClient {
             // send packet and get response
             // (takes into account timeout)
             while(queueFull()) {
-                //System.out.println("Waiting for window space");
+                System.out.println("Waiting for window space");
             }
+
             // add packet to queue window
             try {
                 window.add(new Segment(seqNo, payload));

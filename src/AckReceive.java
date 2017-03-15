@@ -26,7 +26,7 @@ public class AckReceive extends Thread
         boolean baseIsAcked = true;
         while(baseIsAcked) {
             TxQueueNode node = window.getHeadNode();
-            if(node.getStatus() == TxQueueNode.ACKNOWLEDGED) {
+            if(node != null && node.getStatus() == TxQueueNode.ACKNOWLEDGED) {
                 try {
                     window.remove();
                 } catch (Exception e) {
@@ -64,7 +64,7 @@ public class AckReceive extends Thread
                 // update window base
                 updateWindow();
             } catch (Exception e) {
-                System.out.println("No packets received");
+                System.out.println("Socket receive failed");
             }
         }
 
