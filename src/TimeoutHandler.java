@@ -20,9 +20,8 @@ public class TimeoutHandler extends TimerTask
         TxQueueNode node = client.getWindow().getNode(seqNo);
         if(node != null && node.getStatus() != TxQueueNode.ACKNOWLEDGED) {
             // resend packet
+            System.out.println("Resending packet...");
             client.sendPacketData(payload, seqNo);
-            // reset timer
-            client.getTimer().schedule(new TimeoutHandler(client, seqNo, payload), client.getTimeout());
         }
     }
 }

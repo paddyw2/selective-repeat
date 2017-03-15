@@ -82,4 +82,7 @@ Received packet with sequence number: 39
 Packet within the receive window, sent ACK with sequence number: 39
 Received packet with sequence number: 40
 Packet within the receive window, sent ACK with sequence number: 40
-[Server] Closing Exception (TCP connection prematurely closed by client): null
+Received packet with sequence number: 41
+Packet within the receive window, sent ACK with sequence number: 41
+[Server] file transfer completed
+[Server] Terminating connection and server

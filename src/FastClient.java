@@ -141,8 +141,6 @@ public class FastClient {
                 // send packet
                 sendPacketData(payload, seqNo);
                 seqNo++;
-                // start timer
-                timer.schedule(new TimeoutHandler(this, seqNo, payload), responseTimeout);
             } catch (Exception e) {
                 System.out.println("Error adding packet, resending...");
             }
@@ -321,10 +319,14 @@ public class FastClient {
         // try send packet to server
         try {
             UDPSocket.send(sendPacket);
+            // start timer
+            timer.schedule(new TimeoutHandler(this, seqNo, payload), responseTimeout);
         } catch (Exception e) {
             System.out.println("Packet send error");
             System.out.println(e.getMessage());
         }
+
+
 
     }
 
