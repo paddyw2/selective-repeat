@@ -3,4 +3,4 @@
 echo "Running..."
 echo ""
 cd ../bin
-java FastClient localhost 8888 readlist.pdf 10
+java FastClient localhost 8888 file100KB 10

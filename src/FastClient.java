@@ -34,13 +34,14 @@ public class FastClient {
         * @param timeout    time out value
         */
     public FastClient(String server_name, int server_port, int window, int timeout) {
-        /* initialize */    
         /* Initialize values */
         serverName = server_name;
         serverPort = server_port;
         responseTimeout = timeout;
         windowSize = window;
+        // create window queue
         this.window = new TxQueue(window);
+        // create timer
         timer = new Timer(true);
 
         // create sender socket
@@ -60,15 +61,17 @@ public class FastClient {
             System.out.println(e.getMessage());
         }
 
+        // create ack receiving thread, but not start
         ackReceiver = new AckReceive(UDPSocket, this.window);
     }
     
     /* send file */
 
     public void send(String file_name) {
-        // note file name
+        // save file name
         fileName = file_name;
-        // send handshake
+
+        // send tcp handshake
         boolean handshakeSuccess = TCPHandshake();
         if(!handshakeSuccess) {
             System.out.println("Handshake failure - terminating");
@@ -121,40 +124,41 @@ public class FastClient {
                 // end loop after this packet sent
                 fileNotFinished = false;
             }
-           
-            // send packet and get response
-            // (takes into account timeout)
+            
+            // if the window is full, then no new
+            // packets can be sent, so wait until
+            // space frees up
             while(queueFull()) {
-                System.out.println("Waiting for window space");
+                // waiting for window space
             }
 
-            // add packet to queue window
+            // once space is available, add
+            // packet to queue window and send
             try {
+                // add to queue
                 window.add(new Segment(seqNo, payload));
                 TxQueueNode node = window.getNode(seqNo);
                 node.setStatus(TxQueueNode.SENT);
                 // send packet
                 sendPacketData(payload, seqNo);
+                // increment to next sequence number
                 seqNo++;
             } catch (Exception e) {
                 System.out.println("Error adding packet, resending...");
             }
-
             
-            if(!fileNotFinished && window.isEmpty()) {
-                try {
-                    System.out.println("Terminating...");
-                    output.writeByte(0);
-                } catch (Exception e) {
-                    System.out.println("End of file output error");
-                }
-            } else {
+            // if the whole file has been sent/added to
+            // the queue, and all acks have been received
+            // then the transfer is complete
+            if(!fileNotFinished) {
                 while(!window.isEmpty()) {
+                    // wait for last packets to
+                    // be acknowledged
                 }
             }
         }
 
-
+        // once file send loop has finished
         // send end of transmission message
         boolean EOTSuccess = TCPEndTransmission();
         if(!EOTSuccess) {
@@ -174,17 +178,7 @@ public class FastClient {
         }
     }
 
-    public Timer getTimer()
-    {
-        return timer;
-    }
-
-    public int getTimeout()
-    {
-        return responseTimeout;
-    }
-
-    public TxQueue getWindow()
+    public synchronized TxQueue getWindow()
     {
         return window;
     }
@@ -290,14 +284,13 @@ public class FastClient {
         return data;
     }
 
-    public void sendPacketData(byte[] payload, int seqNo)
+    public synchronized void sendPacketData(byte[] payload, int seqNo)
     {
         /* main UDP send logic */
         // takes payload byte array and sequence number
         // creates and sends this as a packet to server
-        // and waits for ACK until timeout
-        // upon timeout, repeat process until ACK
-        // received
+        // it then creates a timer for this packet, where
+        // upon timeout the packet is resent
 
         // creating a segment with specified payload
         // and sequence number
@@ -313,6 +306,7 @@ public class FastClient {
 
         // try send packet to server
         try {
+            // send packet
             UDPSocket.send(sendPacket);
             // start timer
             timer.schedule(new TimeoutHandler(this, seqNo, payload), responseTimeout);
@@ -320,9 +314,6 @@ public class FastClient {
             System.out.println("Packet send error");
             System.out.println(e.getMessage());
         }
-
-
-
     }
 
 

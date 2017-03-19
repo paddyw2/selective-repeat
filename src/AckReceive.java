@@ -1,3 +1,14 @@
+/* Class: AckReceive
+ *
+ * This class creates a thread
+ * that listens for ack responses
+ * from the server
+ * When a response is received
+ * the associated packet status
+ * is updated in the client
+ * window
+ */
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -16,13 +27,18 @@ public class AckReceive extends Thread
 
     public void updateAck(int seqNo)
     {
+        // sets the node status in window
+        // from sent to acknowledged
         TxQueueNode node = window.getNode(seqNo);
         node.setStatus(TxQueueNode.ACKNOWLEDGED);
-
     }
 
     public void updateWindow()
     {
+        // updates window base until an
+        // unacked packet is found
+        // window can only be updated if
+        // base node is acknowledged
         boolean baseIsAcked = true;
         while(baseIsAcked) {
             TxQueueNode node = window.getHeadNode();
@@ -40,7 +56,8 @@ public class AckReceive extends Thread
 
     public void stopThread()
     {
-        System.out.println("Stopping thread...");
+        // allows for external halting
+        // of thread
         runThread = false;
     }
 
@@ -64,9 +81,12 @@ public class AckReceive extends Thread
                 // update window base
                 updateWindow();
             } catch (Exception e) {
-                System.out.println("Socket receive failed");
+                // a socket closed exception is expected
+                // so only print error if different
+                // exception
+                if(!e.getMessage().equals("Socket closed"))
+                    System.out.println("Ack Receive Error: "+e.getMessage());
             }
         }
-
     }
 }
