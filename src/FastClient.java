@@ -130,6 +130,7 @@ public class FastClient {
             // space frees up
             while(queueFull()) {
                 // waiting for window space
+                Thread.yield();
             }
 
             // once space is available, add
@@ -154,6 +155,7 @@ public class FastClient {
                 while(!window.isEmpty()) {
                     // wait for last packets to
                     // be acknowledged
+                    Thread.yield();
                 }
             }
         }
